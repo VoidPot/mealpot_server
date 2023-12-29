@@ -36,14 +36,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/VoidPot/mealpot-server.git"
+    "url": "git+https://github.com/VoidPot/mealpot_server.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/VoidPot/mealpot-server/issues"
+    "url": "https://github.com/VoidPot/mealpot_server/issues"
   },
-  "homepage": "https://github.com/VoidPot/mealpot-server#readme",
+  "homepage": "https://github.com/VoidPot/mealpot_server#readme",
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/graphql-modules-preset": "^4.0.1",
