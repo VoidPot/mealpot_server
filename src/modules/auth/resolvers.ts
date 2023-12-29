@@ -140,7 +140,7 @@ const resolvers: AuthModule.Resolvers = {
       const otp = generateOtp(6, {});
 
       triggerEmail(response.email, "email_verify", [
-        ["URL", "https://soclif.com"],
+        ["URL", "https://mealpot.app"],
         ["CODE", otp],
         ["NAME", response.email.split("@")[0]],
       ]);
@@ -180,7 +180,7 @@ const resolvers: AuthModule.Resolvers = {
       triggerEmail(email, "email_verify", [
         [
           "URL",
-          `https://soclif.com/reset-password?email=${email}&otp=${response.content}`,
+          `https://mealpot.app/reset-password?email=${email}&otp=${response.content}`,
         ],
         ["CODE", response.content],
         ["NAME", firstName || lastName || email.split("@")[0]],

@@ -6,7 +6,7 @@ import logger from "../../providers/logger.js";
 const mode = "node_mailer";
 const templates = {
   email_verify: {
-    subject: "Verify Your Soclif.com Account",
+    subject: "Verify Your MealPot.app Account",
     text: readFileSync(resolve("./templates/email_verify.txt"), "utf8"),
     html: readFileSync(resolve("./templates/email_verify.html"), "utf8"),
   },

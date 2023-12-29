@@ -10,137 +10,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Token {
-  id      String     @id @default(uuid())
-  type    TOKEN_TYPE
-  content String
-
-  createdAt DateTime @default(now())
-  expiresAt DateTime
-
-  user          User         @relation(fields: [userId], references: [id])
-  userId        String
-  userProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
-  userProfileId String?
+enum ACCOUNT_TYPE {
+  BUSINESS
+  CUSTOMER
 }
 
-enum TOKEN_TYPE {
-  MAIL_VERIFY
-  PHONE_VERIFY
-  TOTP
-  PASSWORD_RESET
-}
-
-model User {
-  id            String  @id @default(uuid())
-  firstName     String?
+model Account {
+  id            Int          @id @default(autoincrement())
+  firstName     String
   lastName      String?
-  email         String  @unique
-  emailVerified Boolean @default(false)
-  avatar        Image?  @relation(fields: [avatarId], references: [id])
-  avatarId      String? @unique
-  phoneNumber   String? @unique
-
-  password     String?
-  salt         String?
-  googleAuthId String?
-
-  deleted   Boolean   @default(false)
-  deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  content     Content[]
-  userProfile UserProfile[]
-  tokens      Token[]
-}
-
-model Profile {
-  id       String @id @default(uuid())
-  username String @unique
-  content  Json   @default("{}")
-
-  theme     Json @default("{}")
-  layout    Json @default("{}")
-  placement Json @default("{}")
-
-  images Image[]
+  email         String
+  phone         String?
+  type          ACCOUNT_TYPE @default(CUSTOMER)
+  password      String?
+  salt          String?
+  googleAuthId  String?
+  emailVerified Boolean      @default(false)
+  phoneVerified Boolean      @default(false)
+  addresses     Address[]
+  connections   Connection[]
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  userProfile UserProfile[]
+  @@unique([email, type])
 }
 
-model Content {
-  id          String       @id @default(uuid())
-  title       String
-  description String?
-  image       Image[]
-  type        CONTENT_TYPE
-  additional  Json         @default("{}")
+model Connection {
+  id       Int             @id @default(autoincrement())
+  role     CONNECTION_ROLE @default(OTHER)
+  passcode String?         @default("000000")
 
-  creator   User   @relation(fields: [creatorId], references: [id])
-  creatorId String
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int
+  store     Store   @relation(fields: [storeId], references: [id])
+  storeId   Int
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@unique([accountId, storeId])
 }
 
-model UserProfile {
-  id        String            @id @default(uuid())
-  user      User              @relation(fields: [userId], references: [id])
-  userId    String
-  profile   Profile           @relation(fields: [profileId], references: [id])
-  profileId String
-  role      USER_PROFILE_ROLE @default(MANAGER)
-
-  deleted   Boolean   @default(false)
-  deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  tokens    Token[]
-
-  @@unique([userId, profileId])
-}
-
-enum USER_PROFILE_ROLE {
+enum CONNECTION_ROLE {
   ADMIN
   MANAGER
-  AUTHOR
+  BILLER
+  KETCHEN
+  OTHER
 }
 
-enum CONTENT_TYPE {
-  IMAGE
-  VIDEO
-  EVENT
-  PROFILE
-  PRODUCT
-  PROMO_CODE
+model Store {
+  id     Int     @id @default(autoincrement())
+  name   String
+  deck   String?
+  slug   String  @unique
+  email  String?
+  phone  String?
+  tables Int     @default(0)
+
+  addresses   Address      @relation(fields: [addressId], references: [id])
+  addressId   Int
+  categories  Category[]
+  products    Product[]
+  connections Connection[]
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Item      Item[]
+  Bill      Bill[]
+}
+
+model Address {
+  id       Int     @id @default(autoincrement())
+  line1    String
+  line2    String?
+  state    String
+  county   String
+  pincode  String
+  position Int     @default(1)
+
+  account   Account? @relation(fields: [accountId], references: [id])
+  accountId Int?
+  stores    Store[]
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Image {
-  id    String @id @default(uuid())
-  refId Int    @default(autoincrement())
+  id       Int        @id @default(autoincrement())
+  caption  String?
+  altText  String?
+  content  String
+  type     IMAGE_TYPE @default(PUBLIC)
+  position Int        @default(1)
 
-  caption String?
-  altText String?
-  data    String
-  type    IMAGE_TYPE @default(FILENAME)
-
-  avatar User?
-
-  profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String?
-
-  content   Content? @relation(fields: [contentId], references: [id])
-  contentId String?
-
-  position String @default("DEFAULT")
+  categories Category[]
+  product    Product?   @relation(fields: [productId], references: [id])
+  productId  Int?
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
@@ -150,16 +126,154 @@ model Image {
 
 enum IMAGE_TYPE {
   BASE64
-  FILENAME
+  PUBLIC
+  S3
   PATH
   URL
+  COLOR
 }
 
-// type PhoneNumber {
-//   country        String?
-//   localFormat    String
-//   nationalFormat String
-//   countryCode    String?
-//   areaCode       String?
-//   number         String?
-// }
+model Category {
+  id   Int     @id @default(autoincrement())
+  name String
+  deck String?
+
+  image    Image     @relation(fields: [imageId], references: [id])
+  imageId  Int
+  store    Store     @relation(fields: [storeId], references: [id])
+  storeId  Int
+  products Product[]
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id    Int     @id @default(autoincrement())
+  name  String
+  deck  String?
+  price Float   @default(0)
+
+  image      Image[]
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  store      Store    @relation(fields: [storeId], references: [id])
+  storeId    Int
+  items      Item[]
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Order {
+  id     Int               @id @default(autoincrement())
+  type   ORDER_TYPE        @default(TAKE_AWAY)
+  status ORDER_ITEM_STATUS @default(PENDING)
+  table  Int               @default(0)
+
+  items      Item[]
+  statusLogs OrderStatusLog[]
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Bill      Bill[]
+}
+
+enum ORDER_TYPE {
+  PICK_UP
+  TAKE_AWAY
+  DINING
+  PRE_DINING
+  DELIVERY
+  PLATFORM
+}
+
+model OrderStatusLog {
+  id     Int               @id @default(autoincrement())
+  status ORDER_ITEM_STATUS @default(PENDING)
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orderId   Int
+}
+
+model Item {
+  id       Int               @id @default(autoincrement())
+  title    String?
+  note     String?
+  price    Float             @default(0)
+  quantity Int               @default(0)
+  total    Float             @default(0)
+  position Int               @default(0)
+  interval Int               @default(0)
+  status   ORDER_ITEM_STATUS @default(PENDING)
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   Int
+  bill      Bill?   @relation(fields: [billId], references: [id])
+  billId    Int?
+  store     Store   @relation(fields: [storeId], references: [id])
+  storeId   Int
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum ORDER_ITEM_STATUS {
+  PENDING
+  ACCEPTED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+}
+
+model Bill {
+  id             Int          @id @default(autoincrement())
+  totalPrice     Float        @default(0)
+  taxAmount      Float        @default(0)
+  stateTaxAmount Float        @default(0)
+  packagingFee   Float        @default(0)
+  deliveryFee    Float        @default(0)
+  grandTotal     Float        @default(0)
+  note           String       @default("")
+  billedAt       DateTime     @default(now())
+  printedAt      DateTime?
+  paidAt         DateTime?
+  paidBy         BILL_PAID_BY @default(WALLET)
+  orderType      ORDER_TYPE   @default(TAKE_AWAY)
+
+  items   Item[]
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId Int
+  store   Store  @relation(fields: [storeId], references: [id])
+  storeId Int
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum BILL_PAID_BY {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  UPI
+  WALLET
+  DUE
+}
+
+// Discount in product as fixed and percentage type with value

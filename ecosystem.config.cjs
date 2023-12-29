@@ -2,7 +2,7 @@
 module.exports = {
   apps: [
     {
-      name: "soclif-backend-server",
+      name: "mealpot-backend-server",
       script: "npm run start:stag",
       env: {
         NODE_ENV: "staging",
