@@ -1,0 +1,22 @@
+scalar JSON
+scalar JSONObject
+scalar CountryCode
+scalar Date
+scalar DateTime
+scalar EmailAddress
+
+type Query {
+  _: String!
+  json: JSON
+  jsonObject: JSONObject
+  date: Date
+  dateTime: DateTime
+}
+
+type Mutation {
+  _(message: String!): String!
+}
+
+type Subscription {
+  _: String
+}

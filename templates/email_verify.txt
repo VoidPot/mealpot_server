@@ -1,0 +1,18 @@
+--------------------------------------------------------------------------------
+
+Hello {{NAME}},
+
+Thank you for joining Soclif.com! To ensure the security of your account, please
+verify your email address by entering the verification code below on our website
+
+Copy and paste this temporary login code: {{CODE}}
+
+Alternatively, Click here [{{URL}}] to verify your email
+
+If you didn't try to login, you can safely ignore this email.
+
+Thank you for choosing Soclif.com. We're excited to have you on board!
+
+--------------------------------------------------------------------------------
+
+help@mailto.com | soclif.com [http://soclif.com/]

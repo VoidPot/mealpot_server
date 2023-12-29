@@ -1,0 +1,14 @@
+{
+    "NODE_ENV" : "development",
+    "APP_NAME": "SocLif Server",
+    "PORT": 5050,
+    "SSH": {
+        "PUBLIC_KEY": "",
+        "PRIVATE_KEY": "",
+        "PASS_PHRASE": ""
+    },
+    "DATABASE_URL": "postgres://postgres:1100@localhost:5433/local_db",
+    "GOOGLE_CLIENT_ID": "",
+    "GOOGLE_CLIENT_SECRET": "",
+    "OTP_SECRET": "c8a0f17f91986d66b1d22d4e791ce5b6f5eb4809f0febc051c256d429d508bb5523cb05e395902edffa963004579f9cfe80a1ea0873b0249036e6059ec27c386"
+}

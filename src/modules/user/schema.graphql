@@ -1,0 +1,32 @@
+type Query {
+  user: User
+}
+
+type Mutation {
+  updateUser(input: UserUpdate!): String
+}
+
+input UserUpdate {
+  firstName: String
+  lastName: String
+  avatarId: String
+  phoneNumber: String
+}
+
+type User {
+  id: String!
+  firstName: String
+  lastName: String
+  email: EmailAddress!
+  emailVerified: Boolean!
+  avatar: Image
+  avatarId: String
+  phoneNumber: String
+
+  userProfile: UserProfile
+
+  deleted: Boolean
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

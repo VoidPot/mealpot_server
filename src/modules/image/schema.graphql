@@ -1,0 +1,21 @@
+type Image {
+  id: String!
+  refId: Int!
+  caption: String
+  altText: String
+  data: String!
+  type: IMAGE_TYPE!
+  position: String!
+
+  deleted: Boolean
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum IMAGE_TYPE {
+  BASE64
+  FILENAME
+  PATH
+  URL
+}

@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // mongodb
+  url      = env("DATABASE_URL")
+}
+
+model Token {
+  id      String     @id @default(uuid())
+  type    TOKEN_TYPE
+  content String
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  user          User         @relation(fields: [userId], references: [id])
+  userId        String
+  userProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
+  userProfileId String?
+}
+
+enum TOKEN_TYPE {
+  MAIL_VERIFY
+  PHONE_VERIFY
+  TOTP
+  PASSWORD_RESET
+}
+
+model User {
+  id            String  @id @default(uuid())
+  firstName     String?
+  lastName      String?
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  avatar        Image?  @relation(fields: [avatarId], references: [id])
+  avatarId      String? @unique
+  phoneNumber   String? @unique
+
+  password     String?
+  salt         String?
+  googleAuthId String?
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  content     Content[]
+  userProfile UserProfile[]
+  tokens      Token[]
+}
+
+model Profile {
+  id       String @id @default(uuid())
+  username String @unique
+  content  Json   @default("{}")
+
+  theme     Json @default("{}")
+  layout    Json @default("{}")
+  placement Json @default("{}")
+
+  images Image[]
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userProfile UserProfile[]
+}
+
+model Content {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  image       Image[]
+  type        CONTENT_TYPE
+  additional  Json         @default("{}")
+
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId String
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model UserProfile {
+  id        String            @id @default(uuid())
+  user      User              @relation(fields: [userId], references: [id])
+  userId    String
+  profile   Profile           @relation(fields: [profileId], references: [id])
+  profileId String
+  role      USER_PROFILE_ROLE @default(MANAGER)
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tokens    Token[]
+
+  @@unique([userId, profileId])
+}
+
+enum USER_PROFILE_ROLE {
+  ADMIN
+  MANAGER
+  AUTHOR
+}
+
+enum CONTENT_TYPE {
+  IMAGE
+  VIDEO
+  EVENT
+  PROFILE
+  PRODUCT
+  PROMO_CODE
+}
+
+model Image {
+  id    String @id @default(uuid())
+  refId Int    @default(autoincrement())
+
+  caption String?
+  altText String?
+  data    String
+  type    IMAGE_TYPE @default(FILENAME)
+
+  avatar User?
+
+  profile   Profile? @relation(fields: [profileId], references: [id])
+  profileId String?
+
+  content   Content? @relation(fields: [contentId], references: [id])
+  contentId String?
+
+  position String @default("DEFAULT")
+
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum IMAGE_TYPE {
+  BASE64
+  FILENAME
+  PATH
+  URL
+}
+
+// type PhoneNumber {
+//   country        String?
+//   localFormat    String
+//   nationalFormat String
+//   countryCode    String?
+//   areaCode       String?
+//   number         String?
+// }

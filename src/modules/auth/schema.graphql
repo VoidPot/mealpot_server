@@ -1,0 +1,33 @@
+type Query {
+  usernameExist(username: String!): Boolean
+  emailExist(email: EmailAddress!): Boolean
+}
+
+type Mutation {
+  googleSignIn(input: String!, selectBy: String): Response!
+  login(email: EmailAddress!, password: String!): Response!
+  signUp(
+    email: EmailAddress!
+    password: String!
+    username: String!
+    firstName: String
+    lastName: String
+  ): Response!
+  changePassword(oldPassword: String!, password: String!): Boolean
+  resetPassword(email: EmailAddress!, otp: String!, password: String!): Boolean
+  forgotPassword(email: EmailAddress!): Boolean
+}
+
+# interface Response {
+#   code: Int!
+#   message: String!
+#   payload: JSON!
+# }
+
+type Response {
+  code: Int!
+  message: String!
+  payload: JSON!
+  token: String!
+  redirect: String!
+}

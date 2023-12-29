@@ -1,0 +1,25 @@
+type Query {
+  profile(username: String!): Profile
+  myProfiles: [Profile]
+}
+
+type Mutation {
+  createFirstProfile(username: String!): Profile
+}
+
+type Profile {
+  id: String!
+  username: String!
+  content: JSONObject!
+  theme: JSONObject!
+  layout: JSONObject!
+  placement: JSONObject!
+
+  deleted: Boolean
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  # images Image[]
+  # userProfile UserProfile[]
+}
