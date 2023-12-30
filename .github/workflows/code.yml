@@ -13,25 +13,25 @@ jobs:
         with:
           node-version: "20.x"
       - run: npm ci
-      - run: npm run prisma:generate
+      - run: npm run db:generate
       - run: npm run build
 
-  staging-deployment:
-    name: Staging Deployment
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Connect SSH and Run Scripts
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          script: |
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            cd /root/projects/backend-server
-            git checkout .
-            git pull
-            npm run setup
-            pm2 restart ecosystem.config.cjs
+  # staging-deployment:
+  #   name: Staging Deployment
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Connect SSH and Run Scripts
+  #       uses: appleboy/ssh-action@v1.0.0
+  #       with:
+  #         host: ${{ secrets.HOST }}
+  #         username: ${{ secrets.USERNAME }}
+  #         key: ${{ secrets.KEY }}
+  #         script: |
+  #           export NVM_DIR=~/.nvm
+  #           source ~/.nvm/nvm.sh
+  #           cd /root/projects/mealpot-server
+  #           git checkout .
+  #           git pull
+  #           npm run setup
+  #           pm2 restart ecosystem.config.cjs

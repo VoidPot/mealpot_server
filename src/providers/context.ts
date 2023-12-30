@@ -15,7 +15,7 @@ const getContext: ContextFunction<
   Context
 > = async ({ req }) => {
   let auth: ContextAuthData = {
-    isTokenExist: false,
+    hasToken: false,
     isAuthenticated: false,
     id: "",
     email: "",
@@ -32,7 +32,7 @@ const getContext: ContextFunction<
     logger.debug("CONTEXT :: header :: token ", { token });
 
     if (token) {
-      auth.isTokenExist = true;
+      auth.hasToken = true;
       const response = decodeJWT(token);
 
       if (typeof response === "string") {
@@ -53,12 +53,6 @@ const getContext: ContextFunction<
             emailVerified: response.emailVerified,
             googleConnected: Boolean(response.googleAuthId),
             passwordAdded: Boolean(response.password),
-            profiles: response.userProfile.map((each) => ({
-              id: each.profile.id,
-              username: each.profile.username,
-              role: each.role,
-              userProfileId: each.id,
-            })),
           };
         }
       }

@@ -18,7 +18,7 @@ ADD config config
 ADD prisma prisma
 
 RUN npm ci
-RUN npm run prisma:gen
+RUN npm run db:generate
 RUN npm run build
 
 CMD ["node", "build/index.js"]

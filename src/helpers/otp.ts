@@ -24,6 +24,7 @@ export function generateOtp(
     ((lowerCaseAlphabets || "") && lowerCaseAlphabetsStr) +
     ((upperCaseAlphabets || "") && upperCaseAlphabetsStr) +
     ((specialChars || "") && specialCharsStr);
+
   let password = "";
   while (password.length < length) {
     const charIndex = randomInt(0, allowsChars.length);

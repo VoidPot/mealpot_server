@@ -10,9 +10,9 @@ import profile from "../../services/profile.js";
 import token from "../../services/token.js";
 import user from "../../services/user.js";
 import { mapToObject } from "../../utils/common.js";
-import { AuthModule } from "./types";
+import { AccountModule } from "./types.js";
 
-const resolvers: AuthModule.Resolvers = {
+const resolvers: AccountModule.Resolvers = {
   Query: {
     usernameExist: async (_parent, { username }) => {
       return await profile.isUniqueUsername(username);

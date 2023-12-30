@@ -1,6 +1,6 @@
 {
     "NODE_ENV" : "development",
-    "APP_NAME": "SocLif Server",
+    "APP_NAME": "MealPot Server",
     "PORT": 5050,
     "SSH": {
         "PUBLIC_KEY": "",

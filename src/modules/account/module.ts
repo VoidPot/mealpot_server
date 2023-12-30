@@ -7,7 +7,7 @@ import resolvers from "./resolvers.js";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const gqlModule = createModule({
-  id: "user-module",
+  id: "account-module",
   dirname: __dirname,
   typeDefs: await loadFiles(join(__dirname, "./*.graphql")),
   resolvers,

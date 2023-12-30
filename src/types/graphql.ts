@@ -63,13 +63,11 @@ export type Mutation = {
   __typename?: "Mutation";
   _: Scalars["String"]["output"];
   changePassword?: Maybe<Scalars["Boolean"]["output"]>;
-  createFirstProfile?: Maybe<Profile>;
   forgotPassword?: Maybe<Scalars["Boolean"]["output"]>;
   googleSignIn: Response;
   login: Response;
   resetPassword?: Maybe<Scalars["Boolean"]["output"]>;
   signUp: Response;
-  updateUser?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type MutationArgs = {
@@ -79,10 +77,6 @@ export type MutationArgs = {
 export type MutationChangePasswordArgs = {
   oldPassword: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
-};
-
-export type MutationCreateFirstProfileArgs = {
-  username: Scalars["String"]["input"];
 };
 
 export type MutationForgotPasswordArgs = {
@@ -113,24 +107,6 @@ export type MutationSignUpArgs = {
   username: Scalars["String"]["input"];
 };
 
-export type MutationUpdateUserArgs = {
-  input: UserUpdate;
-};
-
-export type Profile = {
-  __typename?: "Profile";
-  content: Scalars["JSONObject"]["output"];
-  createdAt: Scalars["DateTime"]["output"];
-  deleted?: Maybe<Scalars["Boolean"]["output"]>;
-  deletedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  id: Scalars["String"]["output"];
-  layout: Scalars["JSONObject"]["output"];
-  placement: Scalars["JSONObject"]["output"];
-  theme: Scalars["JSONObject"]["output"];
-  updatedAt: Scalars["DateTime"]["output"];
-  username: Scalars["String"]["output"];
-};
-
 export type Query = {
   __typename?: "Query";
   _: Scalars["String"]["output"];
@@ -139,18 +115,11 @@ export type Query = {
   emailExist?: Maybe<Scalars["Boolean"]["output"]>;
   json?: Maybe<Scalars["JSON"]["output"]>;
   jsonObject?: Maybe<Scalars["JSONObject"]["output"]>;
-  myProfiles?: Maybe<Array<Maybe<Profile>>>;
-  profile?: Maybe<Profile>;
-  user?: Maybe<User>;
   usernameExist?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type QueryEmailExistArgs = {
   email: Scalars["EmailAddress"]["input"];
-};
-
-export type QueryProfileArgs = {
-  username: Scalars["String"]["input"];
 };
 
 export type QueryUsernameExistArgs = {
@@ -169,46 +138,6 @@ export type Response = {
 export type Subscription = {
   __typename?: "Subscription";
   _?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserProfileRole = "ADMIN" | "AUTHOR" | "MANAGER";
-
-export type User = {
-  __typename?: "User";
-  avatar?: Maybe<Image>;
-  avatarId?: Maybe<Scalars["String"]["output"]>;
-  createdAt: Scalars["DateTime"]["output"];
-  deleted?: Maybe<Scalars["Boolean"]["output"]>;
-  deletedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  email: Scalars["EmailAddress"]["output"];
-  emailVerified: Scalars["Boolean"]["output"];
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  id: Scalars["String"]["output"];
-  lastName?: Maybe<Scalars["String"]["output"]>;
-  phoneNumber?: Maybe<Scalars["String"]["output"]>;
-  updatedAt: Scalars["DateTime"]["output"];
-  userProfile?: Maybe<UserProfile>;
-};
-
-export type UserProfile = {
-  __typename?: "UserProfile";
-  createdAt: Scalars["DateTime"]["output"];
-  deleted?: Maybe<Scalars["Boolean"]["output"]>;
-  deletedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  id: Scalars["String"]["output"];
-  profile: Profile;
-  profileId: Scalars["String"]["output"];
-  role: UserProfileRole;
-  updatedAt: Scalars["DateTime"]["output"];
-  user: User;
-  userId: Scalars["String"]["output"];
-};
-
-export type UserUpdate = {
-  avatarId?: InputMaybe<Scalars["String"]["input"]>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  phoneNumber?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -329,15 +258,10 @@ export type ResolversTypes = {
   JSON: ResolverTypeWrapper<NonNullable<unknown>>;
   JSONObject: ResolverTypeWrapper<NonNullable<unknown>>;
   Mutation: ResolverTypeWrapper<{}>;
-  Profile: ResolverTypeWrapper<NonNullable<unknown>>;
   Query: ResolverTypeWrapper<{}>;
   Response: ResolverTypeWrapper<NonNullable<unknown>>;
   String: ResolverTypeWrapper<NonNullable<unknown>>;
   Subscription: ResolverTypeWrapper<{}>;
-  USER_PROFILE_ROLE: ResolverTypeWrapper<NonNullable<unknown>>;
-  User: ResolverTypeWrapper<NonNullable<unknown>>;
-  UserProfile: ResolverTypeWrapper<NonNullable<unknown>>;
-  UserUpdate: ResolverTypeWrapper<NonNullable<unknown>>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -352,14 +276,10 @@ export type ResolversParentTypes = {
   JSON: NonNullable<unknown>;
   JSONObject: NonNullable<unknown>;
   Mutation: {};
-  Profile: NonNullable<unknown>;
   Query: {};
   Response: NonNullable<unknown>;
   String: NonNullable<unknown>;
   Subscription: {};
-  User: NonNullable<unknown>;
-  UserProfile: NonNullable<unknown>;
-  UserUpdate: NonNullable<unknown>;
 };
 
 export interface CountryCodeScalarConfig
@@ -432,12 +352,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationChangePasswordArgs, "oldPassword" | "password">
   >;
-  createFirstProfile?: Resolver<
-    Maybe<ResolversTypes["Profile"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateFirstProfileArgs, "username">
-  >;
   forgotPassword?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
@@ -468,34 +382,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationSignUpArgs, "email" | "password" | "username">
   >;
-  updateUser?: Resolver<
-    Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationUpdateUserArgs, "input">
-  >;
-};
-
-export type ProfileResolvers<
-  ContextType = Context,
-  ParentType extends
-    ResolversParentTypes["Profile"] = ResolversParentTypes["Profile"],
-> = {
-  content?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  deleted?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
-  deletedAt?: Resolver<
-    Maybe<ResolversTypes["DateTime"]>,
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  layout?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
-  placement?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
-  theme?: Resolver<ResolversTypes["JSONObject"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<
@@ -522,18 +408,6 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
-  myProfiles?: Resolver<
-    Maybe<Array<Maybe<ResolversTypes["Profile"]>>>,
-    ParentType,
-    ContextType
-  >;
-  profile?: Resolver<
-    Maybe<ResolversTypes["Profile"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryProfileArgs, "username">
-  >;
-  user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
   usernameExist?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,
@@ -568,65 +442,6 @@ export type SubscriptionResolvers<
   >;
 };
 
-export type UserResolvers<
-  ContextType = Context,
-  ParentType extends
-    ResolversParentTypes["User"] = ResolversParentTypes["User"],
-> = {
-  avatar?: Resolver<Maybe<ResolversTypes["Image"]>, ParentType, ContextType>;
-  avatarId?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  deleted?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
-  deletedAt?: Resolver<
-    Maybe<ResolversTypes["DateTime"]>,
-    ParentType,
-    ContextType
-  >;
-  email?: Resolver<ResolversTypes["EmailAddress"], ParentType, ContextType>;
-  emailVerified?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
-  firstName?: Resolver<
-    Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
-  phoneNumber?: Resolver<
-    Maybe<ResolversTypes["String"]>,
-    ParentType,
-    ContextType
-  >;
-  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  userProfile?: Resolver<
-    Maybe<ResolversTypes["UserProfile"]>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UserProfileResolvers<
-  ContextType = Context,
-  ParentType extends
-    ResolversParentTypes["UserProfile"] = ResolversParentTypes["UserProfile"],
-> = {
-  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  deleted?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
-  deletedAt?: Resolver<
-    Maybe<ResolversTypes["DateTime"]>,
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes["Profile"], ParentType, ContextType>;
-  profileId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  role?: Resolver<ResolversTypes["USER_PROFILE_ROLE"], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type Resolvers<ContextType = Context> = {
   CountryCode?: GraphQLScalarType;
   Date?: GraphQLScalarType;
@@ -636,12 +451,9 @@ export type Resolvers<ContextType = Context> = {
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
-  Profile?: ProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Response?: ResponseResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
-  User?: UserResolvers<ContextType>;
-  UserProfile?: UserProfileResolvers<ContextType>;
 };
 
 export type CountryCode = Scalars["CountryCode"];

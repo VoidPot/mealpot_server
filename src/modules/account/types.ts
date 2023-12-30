@@ -1,6 +1,6 @@
 import * as Types from "../../types/graphql";
 import * as gm from "graphql-modules";
-export namespace AuthModule {
+export namespace AccountModule {
   interface DefinedFields {
     Query: "usernameExist" | "emailExist";
     Mutation:

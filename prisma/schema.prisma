@@ -27,8 +27,11 @@ model Account {
   googleAuthId  String?
   emailVerified Boolean      @default(false)
   phoneVerified Boolean      @default(false)
-  addresses     Address[]
-  connections   Connection[]
+
+  image       Image?       @relation(fields: [imageId], references: [id])
+  imageId     Int?
+  addresses   Address[]
+  connections Connection[]
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
@@ -60,7 +63,7 @@ enum CONNECTION_ROLE {
   ADMIN
   MANAGER
   BILLER
-  KETCHEN
+  KITCHEN
   OTHER
 }
 
@@ -78,13 +81,13 @@ model Store {
   categories  Category[]
   products    Product[]
   connections Connection[]
+  items       Item[]
+  bills       Bill[]
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Item      Item[]
-  Bill      Bill[]
 }
 
 model Address {
@@ -122,6 +125,7 @@ model Image {
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  Account   Account[]
 }
 
 enum IMAGE_TYPE {
@@ -138,8 +142,8 @@ model Category {
   name String
   deck String?
 
-  image    Image     @relation(fields: [imageId], references: [id])
-  imageId  Int
+  image    Image?    @relation(fields: [imageId], references: [id])
+  imageId  Int?
   store    Store     @relation(fields: [storeId], references: [id])
   storeId  Int
   products Product[]
@@ -151,10 +155,11 @@ model Category {
 }
 
 model Product {
-  id    Int     @id @default(autoincrement())
-  name  String
-  deck  String?
-  price Float   @default(0)
+  id         Int     @id @default(autoincrement())
+  name       String
+  deck       String?
+  price      Float   @default(0)
+  outOfStock Boolean @default(false)
 
   image      Image[]
   category   Category @relation(fields: [categoryId], references: [id])
