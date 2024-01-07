@@ -19,7 +19,8 @@ model Account {
   id            Int          @id @default(autoincrement())
   firstName     String
   lastName      String?
-  email         String
+  username      String       @default(uuid())
+  email         String?
   phone         String?
   type          ACCOUNT_TYPE @default(CUSTOMER)
   password      String?
@@ -28,16 +29,18 @@ model Account {
   emailVerified Boolean      @default(false)
   phoneVerified Boolean      @default(false)
 
-  image       Image?       @relation(fields: [imageId], references: [id])
-  imageId     Int?
-  addresses   Address[]
-  connections Connection[]
+  image        Image?        @relation(fields: [imageId], references: [id])
+  imageId      Int?          @unique
+  addresses    Address[]
+  connections  Connection[]
+  activityLogs ActivityLog[]
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  @@unique([username, type])
   @@unique([email, type])
 }
 
@@ -120,12 +123,12 @@ model Image {
   categories Category[]
   product    Product?   @relation(fields: [productId], references: [id])
   productId  Int?
+  account    Account?
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Account   Account[]
 }
 
 enum IMAGE_TYPE {
@@ -180,14 +183,14 @@ model Order {
   status ORDER_ITEM_STATUS @default(PENDING)
   table  Int               @default(0)
 
-  items      Item[]
-  statusLogs OrderStatusLog[]
+  items        Item[]
+  bills        Bill[]
+  activityLogs ActivityLog[]
 
   deleted   Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Bill      Bill[]
 }
 
 enum ORDER_TYPE {
@@ -199,15 +202,23 @@ enum ORDER_TYPE {
   PLATFORM
 }
 
-model OrderStatusLog {
-  id     Int               @id @default(autoincrement())
-  status ORDER_ITEM_STATUS @default(PENDING)
+model ActivityLog {
+  id      Int  @id @default(autoincrement())
+  content Json @default("{}")
 
-  order Order @relation(fields: [orderId], references: [id])
+  type      LOG_TYPE @default(DEFAULT)
+  order     Order?   @relation(fields: [orderId], references: [id])
+  orderId   Int?
+  account   Account? @relation(fields: [accountId], references: [id])
+  accountId Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  orderId   Int
+}
+
+enum LOG_TYPE {
+  DEFAULT
+  ORDER_STATUS_UPDATE
 }
 
 model Item {

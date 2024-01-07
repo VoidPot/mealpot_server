@@ -1,20 +1,25 @@
-import { USER_PROFILE_ROLE } from "@prisma/client";
+import { Account, CONNECTION_ROLE, Store } from "@prisma/client";
+
+export type RoleObject = {
+  id: number;
+  role: CONNECTION_ROLE;
+};
 
 export type ContextAuthData = {
-  isTokenExist: Boolean;
+  hasHeaderToken: Boolean;
   isAuthenticated: Boolean;
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  emailVerified: Boolean;
-  googleAuthId?: string;
-  googleConnected: Boolean;
-  passwordAdded: Boolean;
-  profiles: {
-    id: string;
-    username: string;
-    role: USER_PROFILE_ROLE;
-    userProfileId: string;
-  }[];
+  id: number;
+  account?: {
+    id: number;
+    data: Account;
+    stores: Store[];
+    token: string;
+    roles: RoleObject[];
+  };
+  store?: {
+    id: number;
+    role: CONNECTION_ROLE;
+    data: Store;
+  };
+  stores: number[];
 };

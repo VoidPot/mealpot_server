@@ -5,6 +5,7 @@ export namespace BaseModule {
     Query: "_" | "json" | "jsonObject" | "date" | "dateTime";
     Mutation: "_";
     Subscription: "_";
+    Response: "payload";
   }
 
   export type Query = Pick<Types.Query, DefinedFields["Query"]>;
@@ -13,6 +14,7 @@ export namespace BaseModule {
     Types.Subscription,
     DefinedFields["Subscription"]
   >;
+  export type Response = Pick<Types.Response, DefinedFields["Response"]>;
 
   export type Scalars = Pick<
     Types.Scalars,
@@ -37,11 +39,16 @@ export namespace BaseModule {
     Types.SubscriptionResolvers,
     DefinedFields["Subscription"]
   >;
+  export type ResponseResolvers = Pick<
+    Types.ResponseResolvers,
+    DefinedFields["Response"] | "__isTypeOf"
+  >;
 
   export interface Resolvers {
     Query?: QueryResolvers;
     Mutation?: MutationResolvers;
     Subscription?: SubscriptionResolvers;
+    Response?: ResponseResolvers;
     JSON?: Types.Resolvers["JSON"];
     JSONObject?: Types.Resolvers["JSONObject"];
     CountryCode?: Types.Resolvers["CountryCode"];
@@ -69,6 +76,10 @@ export namespace BaseModule {
     Subscription?: {
       "*"?: gm.Middleware[];
       _?: gm.Middleware[];
+    };
+    Response?: {
+      "*"?: gm.Middleware[];
+      payload?: gm.Middleware[];
     };
   }
 }

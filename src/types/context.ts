@@ -14,5 +14,5 @@ export interface Context extends BaseContext {
   pubsub: typeof pubsub;
   subscriptionName: typeof subscriptionName;
   database: typeof prisma;
-  auth: ContextAuthData;
+  user: ContextAuthData;
 }

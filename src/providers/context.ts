@@ -6,54 +6,65 @@ import configs from "./configs.js";
 import { prisma } from "./prisma.js";
 import { GQLError } from "./error-handlers.js";
 import pubsub, { subscriptionName } from "./pubsub.js";
-import { decodeJWT } from "../helpers/jwt.js";
 import { ContextAuthData } from "../types/type.js";
-import user from "../services/user.js";
+import { decodeJWT } from "../helpers/jwt.js";
+import accountService from "../services/account.js";
 
 const getContext: ContextFunction<
   [ExpressContextFunctionArgument],
   Context
 > = async ({ req }) => {
-  let auth: ContextAuthData = {
-    hasToken: false,
+  const user: ContextAuthData = {
+    hasHeaderToken: false,
     isAuthenticated: false,
-    id: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    emailVerified: false,
-    googleConnected: false,
-    passwordAdded: false,
-    profiles: [],
+    id: 0,
+    stores: [],
   };
 
   try {
     const token: any = req.headers.authorization || undefined;
     logger.debug("CONTEXT :: header :: token ", { token });
-
     if (token) {
-      auth.hasToken = true;
+      user.hasHeaderToken = true;
       const response = decodeJWT(token);
 
       if (typeof response === "string") {
         throw GQLError(response, "AUTHENTICATION_FAILED");
       }
+      const { id, storeId } = response;
 
-      const { id } = response;
-      if (id) {
-        const response = await user.getContextData(id);
-        if (response?.id) {
-          auth = {
-            ...auth,
-            isAuthenticated: true,
-            id: response.id,
-            email: response.email,
-            firstName: response.firstName || "",
-            lastName: response.lastName || "",
-            emailVerified: response.emailVerified,
-            googleConnected: Boolean(response.googleAuthId),
-            passwordAdded: Boolean(response.password),
-          };
+      if (!id) {
+        throw GQLError("INVALID_TOKEN", "AUTHENTICATION_FAILED");
+      }
+
+      const data = await accountService.getContextData(id);
+
+      if (!data?.id) {
+        throw GQLError("INVALID_TOKEN", "AUTHENTICATION_FAILED");
+      }
+
+      if (data) {
+        const { connections, ...account } = data;
+        user.account = {
+          id: account.id,
+          data: account,
+          stores: connections.map((e) => e.store),
+          token,
+          roles: connections.map((e) => ({ id: e.store.id, role: e.role })),
+        };
+        user.stores = connections.map((e) => e.store.id);
+        if (storeId) {
+          const connection = connections.find(
+            (e) => e.store.id === Number(storeId),
+          );
+
+          if (connection?.store) {
+            user.store = {
+              id: connection.store.id,
+              role: connection.role,
+              data: connection.store,
+            };
+          }
         }
       }
     }
@@ -62,7 +73,7 @@ const getContext: ContextFunction<
   }
 
   return {
-    auth,
+    user,
     logger,
     configs,
     GQLError,

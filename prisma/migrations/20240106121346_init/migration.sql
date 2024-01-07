@@ -11,6 +11,9 @@ CREATE TYPE "IMAGE_TYPE" AS ENUM ('BASE64', 'PUBLIC', 'S3', 'PATH', 'URL', 'COLO
 CREATE TYPE "ORDER_TYPE" AS ENUM ('PICK_UP', 'TAKE_AWAY', 'DINING', 'PRE_DINING', 'DELIVERY', 'PLATFORM');
 
 -- CreateEnum
+CREATE TYPE "LOG_TYPE" AS ENUM ('DEFAULT', 'ORDER_STATUS_UPDATE');
+
+-- CreateEnum
 CREATE TYPE "ORDER_ITEM_STATUS" AS ENUM ('PENDING', 'ACCEPTED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED');
 
 -- CreateEnum
@@ -21,7 +24,8 @@ CREATE TABLE "Account" (
     "id" SERIAL NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT,
-    "email" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "email" TEXT,
     "phone" TEXT,
     "type" "ACCOUNT_TYPE" NOT NULL DEFAULT 'CUSTOMER',
     "password" TEXT,
@@ -153,14 +157,16 @@ CREATE TABLE "Order" (
 );
 
 -- CreateTable
-CREATE TABLE "OrderStatusLog" (
+CREATE TABLE "ActivityLog" (
     "id" SERIAL NOT NULL,
-    "status" "ORDER_ITEM_STATUS" NOT NULL DEFAULT 'PENDING',
+    "content" JSONB NOT NULL DEFAULT '{}',
+    "type" "LOG_TYPE" NOT NULL DEFAULT 'DEFAULT',
+    "orderId" INTEGER,
+    "accountId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "orderId" INTEGER NOT NULL,
 
-    CONSTRAINT "OrderStatusLog_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ActivityLog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -212,6 +218,12 @@ CREATE TABLE "Bill" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Account_imageId_key" ON "Account"("imageId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Account_username_type_key" ON "Account"("username", "type");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Account_email_type_key" ON "Account"("email", "type");
 
 -- CreateIndex
@@ -251,7 +263,10 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("cat
 ALTER TABLE "Product" ADD CONSTRAINT "Product_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrderStatusLog" ADD CONSTRAINT "OrderStatusLog_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ActivityLog" ADD CONSTRAINT "ActivityLog_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Item" ADD CONSTRAINT "Item_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

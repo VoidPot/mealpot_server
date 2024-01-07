@@ -1,0 +1,19 @@
+type Query {
+  stores(roles: [CONNECTION_ROLE]!): [Store]
+  store: Store
+}
+
+type Store {
+  id: Int!
+  name: String!
+  deck: String
+  slug: String!
+  email: String
+  phone: String
+  tables: Int!
+
+  deleted: Boolean
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

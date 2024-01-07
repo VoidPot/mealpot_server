@@ -15,7 +15,7 @@ const isNotAuthenticated = rule({ cache: "contextual" })(async (
   ctx: Context,
   _info,
 ) => {
-  if (ctx.auth.isTokenExist) {
+  if (ctx.user.isAuthenticated) {
     return GQLError("AUTHORIZED_NOT_ALLOW", "AUTHENTICATION_FAILED");
   }
   return true;
@@ -27,7 +27,19 @@ const isAuthenticated = rule({ cache: "contextual" })(async (
   ctx: Context,
   _info,
 ) => {
-  if (!ctx.auth.isAuthenticated) {
+  if (!ctx.user.isAuthenticated) {
+    return GQLError("UNAUTHORIZED_NOT_ALLOW", "AUTHENTICATION_FAILED");
+  }
+  return true;
+});
+
+const isAuthenticatedStore = rule({ cache: "contextual" })(async (
+  _parent,
+  _args,
+  ctx: Context,
+  _info,
+) => {
+  if (!ctx.user.isAuthenticated || !ctx.user.store?.id) {
     return GQLError("UNAUTHORIZED_NOT_ALLOW", "AUTHENTICATION_FAILED");
   }
   return true;
@@ -36,19 +48,12 @@ const isAuthenticated = rule({ cache: "contextual" })(async (
 export const permissions = shield(
   {
     Query: {
-      profile: isAnybody,
-      myProfiles: isAuthenticated,
-      user: isAuthenticated,
+      stores: isAuthenticated,
+      store: isAuthenticatedStore,
     },
     Mutation: {
-      googleSignIn: isNotAuthenticated,
       login: isNotAuthenticated,
-      signUp: isNotAuthenticated,
-      changePassword: isAuthenticated,
-      resetPassword: isNotAuthenticated,
-      forgotPassword: isNotAuthenticated,
-      createFirstProfile: isAuthenticated,
-      updateUser: isAuthenticated,
+      storeLogin: isAuthenticated,
     },
   },
   {

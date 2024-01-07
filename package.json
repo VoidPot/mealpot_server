@@ -18,7 +18,6 @@
     "db:push": "prisma db push",
     "db:reset": "npm run db:truncate && npm run db:seed",
     "db:seed": "prisma db seed",
-    "db:seed:copy": "prisma db seed copy",
     "db:setup": "npm run db:generate && npm run db:deploy",
     "db:studio": "npx prisma studio",
     "dev": "nodemon --config nodemon.json --inspect src/index.ts",

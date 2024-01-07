@@ -42,6 +42,13 @@ export type Scalars = {
   JSONObject: { input: any; output: any };
 };
 
+export type ConnectionRole =
+  | "ADMIN"
+  | "BILLER"
+  | "KITCHEN"
+  | "MANAGER"
+  | "OTHER";
+
 export type ImageType = "BASE64" | "FILENAME" | "PATH" | "URL";
 
 export type Image = {
@@ -62,49 +69,22 @@ export type Image = {
 export type Mutation = {
   __typename?: "Mutation";
   _: Scalars["String"]["output"];
-  changePassword?: Maybe<Scalars["Boolean"]["output"]>;
-  forgotPassword?: Maybe<Scalars["Boolean"]["output"]>;
-  googleSignIn: Response;
   login: Response;
-  resetPassword?: Maybe<Scalars["Boolean"]["output"]>;
-  signUp: Response;
+  storeLogin: Response;
 };
 
 export type MutationArgs = {
   message: Scalars["String"]["input"];
 };
 
-export type MutationChangePasswordArgs = {
-  oldPassword: Scalars["String"]["input"];
-  password: Scalars["String"]["input"];
-};
-
-export type MutationForgotPasswordArgs = {
-  email: Scalars["EmailAddress"]["input"];
-};
-
-export type MutationGoogleSignInArgs = {
-  input: Scalars["String"]["input"];
-  selectBy?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type MutationLoginArgs = {
-  email: Scalars["EmailAddress"]["input"];
   password: Scalars["String"]["input"];
-};
-
-export type MutationResetPasswordArgs = {
-  email: Scalars["EmailAddress"]["input"];
-  otp: Scalars["String"]["input"];
-  password: Scalars["String"]["input"];
-};
-
-export type MutationSignUpArgs = {
-  email: Scalars["EmailAddress"]["input"];
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  password: Scalars["String"]["input"];
+  roles: Array<InputMaybe<ConnectionRole>>;
   username: Scalars["String"]["input"];
+};
+
+export type MutationStoreLoginArgs = {
+  storeId: Scalars["Int"]["input"];
 };
 
 export type Query = {
@@ -112,27 +92,34 @@ export type Query = {
   _: Scalars["String"]["output"];
   date?: Maybe<Scalars["Date"]["output"]>;
   dateTime?: Maybe<Scalars["DateTime"]["output"]>;
-  emailExist?: Maybe<Scalars["Boolean"]["output"]>;
   json?: Maybe<Scalars["JSON"]["output"]>;
   jsonObject?: Maybe<Scalars["JSONObject"]["output"]>;
-  usernameExist?: Maybe<Scalars["Boolean"]["output"]>;
+  store?: Maybe<Store>;
+  stores?: Maybe<Array<Maybe<Store>>>;
 };
 
-export type QueryEmailExistArgs = {
-  email: Scalars["EmailAddress"]["input"];
-};
-
-export type QueryUsernameExistArgs = {
-  username: Scalars["String"]["input"];
+export type QueryStoresArgs = {
+  roles: Array<InputMaybe<ConnectionRole>>;
 };
 
 export type Response = {
   __typename?: "Response";
-  code: Scalars["Int"]["output"];
-  message: Scalars["String"]["output"];
   payload: Scalars["JSON"]["output"];
-  redirect: Scalars["String"]["output"];
-  token: Scalars["String"]["output"];
+};
+
+export type Store = {
+  __typename?: "Store";
+  createdAt: Scalars["DateTime"]["output"];
+  deck?: Maybe<Scalars["String"]["output"]>;
+  deleted?: Maybe<Scalars["Boolean"]["output"]>;
+  deletedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["Int"]["output"];
+  name: Scalars["String"]["output"];
+  phone?: Maybe<Scalars["String"]["output"]>;
+  slug: Scalars["String"]["output"];
+  tables: Scalars["Int"]["output"];
+  updatedAt: Scalars["DateTime"]["output"];
 };
 
 export type Subscription = {
@@ -248,6 +235,7 @@ export type DirectiveResolverFn<
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<NonNullable<unknown>>;
+  CONNECTION_ROLE: ResolverTypeWrapper<NonNullable<unknown>>;
   CountryCode: ResolverTypeWrapper<NonNullable<unknown>>;
   Date: ResolverTypeWrapper<NonNullable<unknown>>;
   DateTime: ResolverTypeWrapper<NonNullable<unknown>>;
@@ -260,6 +248,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   Response: ResolverTypeWrapper<NonNullable<unknown>>;
+  Store: ResolverTypeWrapper<NonNullable<unknown>>;
   String: ResolverTypeWrapper<NonNullable<unknown>>;
   Subscription: ResolverTypeWrapper<{}>;
 };
@@ -278,6 +267,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Query: {};
   Response: NonNullable<unknown>;
+  Store: NonNullable<unknown>;
   String: NonNullable<unknown>;
   Subscription: {};
 };
@@ -346,41 +336,17 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationArgs, "message">
   >;
-  changePassword?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationChangePasswordArgs, "oldPassword" | "password">
-  >;
-  forgotPassword?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationForgotPasswordArgs, "email">
-  >;
-  googleSignIn?: Resolver<
-    ResolversTypes["Response"],
-    ParentType,
-    ContextType,
-    RequireFields<MutationGoogleSignInArgs, "input">
-  >;
   login?: Resolver<
     ResolversTypes["Response"],
     ParentType,
     ContextType,
-    RequireFields<MutationLoginArgs, "email" | "password">
+    RequireFields<MutationLoginArgs, "password" | "roles" | "username">
   >;
-  resetPassword?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationResetPasswordArgs, "email" | "otp" | "password">
-  >;
-  signUp?: Resolver<
+  storeLogin?: Resolver<
     ResolversTypes["Response"],
     ParentType,
     ContextType,
-    RequireFields<MutationSignUpArgs, "email" | "password" | "username">
+    RequireFields<MutationStoreLoginArgs, "storeId">
   >;
 };
 
@@ -396,23 +362,18 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
-  emailExist?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryEmailExistArgs, "email">
-  >;
   json?: Resolver<Maybe<ResolversTypes["JSON"]>, ParentType, ContextType>;
   jsonObject?: Resolver<
     Maybe<ResolversTypes["JSONObject"]>,
     ParentType,
     ContextType
   >;
-  usernameExist?: Resolver<
-    Maybe<ResolversTypes["Boolean"]>,
+  store?: Resolver<Maybe<ResolversTypes["Store"]>, ParentType, ContextType>;
+  stores?: Resolver<
+    Maybe<Array<Maybe<ResolversTypes["Store"]>>>,
     ParentType,
     ContextType,
-    RequireFields<QueryUsernameExistArgs, "username">
+    RequireFields<QueryStoresArgs, "roles">
   >;
 };
 
@@ -421,11 +382,30 @@ export type ResponseResolvers<
   ParentType extends
     ResolversParentTypes["Response"] = ResolversParentTypes["Response"],
 > = {
-  code?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
-  message?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   payload?: Resolver<ResolversTypes["JSON"], ParentType, ContextType>;
-  redirect?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
-  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StoreResolvers<
+  ContextType = Context,
+  ParentType extends
+    ResolversParentTypes["Store"] = ResolversParentTypes["Store"],
+> = {
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  deck?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  deleted?: Resolver<Maybe<ResolversTypes["Boolean"]>, ParentType, ContextType>;
+  deletedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >;
+  email?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  phone?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  tables?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -453,6 +433,7 @@ export type Resolvers<ContextType = Context> = {
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Response?: ResponseResolvers<ContextType>;
+  Store?: StoreResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
 };
 

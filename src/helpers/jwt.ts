@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 import configs from "../providers/configs.js";
 import logger from "../providers/logger.js";
 
-export function encodeJWT(payload: object): string | undefined {
+export function encodeJWT(payload: {
+  id: number;
+  storeId?: number;
+}): string | undefined {
   const { SSH, JWT_SIGN_OPTIONS } = configs;
   const { PRIVATE_KEY, PASS_PHRASE } = SSH;
 
@@ -23,7 +26,7 @@ export function encodeJWT(payload: object): string | undefined {
 
 export function decodeJWT(
   token: string,
-): { id: string; email: string } | string {
+): { id: number; storeId?: number } | string {
   const { SSH, JWT_VERIFY_OPTIONS } = configs;
   const { PUBLIC_KEY } = SSH;
 
