@@ -1,5 +1,5 @@
 type Query {
-  stores(roles: [CONNECTION_ROLE]!): [Store]
+  stores: [Store]
   store: Store
 }
 

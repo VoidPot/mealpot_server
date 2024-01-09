@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { verifyPasswordHash } from "../../helpers/hash.js";
 import { encodeJWT } from "../../helpers/jwt.js";
 import account from "../../services/account.js";
@@ -6,35 +5,30 @@ import { AccountModule } from "./types.js";
 
 const resolvers: AccountModule.Resolvers = {
   Mutation: {
-    login: async (_parent, { username, password, roles }, { GQLError }) => {
+    login: async (_parent, { username, password }, { GQLError }) => {
       const response = await account.getAuthData(username);
-      const connectionRoles = response?.connections.map((e) => e.role) || [];
       if (response && response.id) {
-        if (_.intersection(connectionRoles, roles).length) {
-          if (response.password && response.salt) {
-            const validatePassword = verifyPasswordHash(
-              password,
-              response.password,
-              response.salt,
-            );
+        if (response.password && response.salt) {
+          const validatePassword = verifyPasswordHash(
+            password,
+            response.password,
+            response.salt,
+          );
 
-            if (validatePassword) {
-              const token = encodeJWT({
-                id: response.id,
-              });
+          if (validatePassword) {
+            const token = encodeJWT({
+              id: response.id,
+            });
 
-              return {
-                payload: { token },
-              };
-            }
-
-            throw GQLError("INCORRECT_PASSWORD", "ENTITY_NOT_FOUND");
+            return {
+              payload: { token },
+            };
           }
 
-          throw GQLError("NO_PASSWORD_ADDED", "ENTITY_NOT_FOUND");
+          throw GQLError("INCORRECT_PASSWORD", "ENTITY_NOT_FOUND");
         }
 
-        throw GQLError("ROLE_INCORRECT", "ENTITY_NOT_FOUND");
+        throw GQLError("NO_PASSWORD_ADDED", "ENTITY_NOT_FOUND");
       }
 
       throw GQLError("USER_NOT_FOUND", "ENTITY_NOT_FOUND");

@@ -14,11 +14,6 @@ async function getAuthData(username: string) {
       email: true,
       username: true,
       id: true,
-      connections: {
-        select: {
-          role: true,
-        },
-      },
     },
   });
   return response;

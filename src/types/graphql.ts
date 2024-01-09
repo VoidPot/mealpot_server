@@ -79,7 +79,6 @@ export type MutationArgs = {
 
 export type MutationLoginArgs = {
   password: Scalars["String"]["input"];
-  roles: Array<InputMaybe<ConnectionRole>>;
   username: Scalars["String"]["input"];
 };
 
@@ -96,10 +95,6 @@ export type Query = {
   jsonObject?: Maybe<Scalars["JSONObject"]["output"]>;
   store?: Maybe<Store>;
   stores?: Maybe<Array<Maybe<Store>>>;
-};
-
-export type QueryStoresArgs = {
-  roles: Array<InputMaybe<ConnectionRole>>;
 };
 
 export type Response = {
@@ -340,7 +335,7 @@ export type MutationResolvers<
     ResolversTypes["Response"],
     ParentType,
     ContextType,
-    RequireFields<MutationLoginArgs, "password" | "roles" | "username">
+    RequireFields<MutationLoginArgs, "password" | "username">
   >;
   storeLogin?: Resolver<
     ResolversTypes["Response"],
@@ -372,8 +367,7 @@ export type QueryResolvers<
   stores?: Resolver<
     Maybe<Array<Maybe<ResolversTypes["Store"]>>>,
     ParentType,
-    ContextType,
-    RequireFields<QueryStoresArgs, "roles">
+    ContextType
   >;
 };
 

@@ -26,7 +26,9 @@ const getContext: ContextFunction<
     logger.debug("CONTEXT :: header :: token ", { token });
     if (token) {
       user.hasHeaderToken = true;
+
       const response = decodeJWT(token);
+      logger.debug("CONTEXT :: jwt :: decode ", { response });
 
       if (typeof response === "string") {
         throw GQLError(response, "AUTHENTICATION_FAILED");
@@ -39,9 +41,14 @@ const getContext: ContextFunction<
 
       const data = await accountService.getContextData(id);
 
+      logger.debug("CONTEXT :: account :: data ", { response });
+
       if (!data?.id) {
         throw GQLError("INVALID_TOKEN", "AUTHENTICATION_FAILED");
       }
+
+      user.id = data.id;
+      user.isAuthenticated = true;
 
       if (data) {
         const { connections, ...account } = data;

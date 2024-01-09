@@ -19,7 +19,6 @@ export namespace StoreModule {
 
   export type Query = Pick<Types.Query, DefinedFields["Query"]>;
   export type Store = Pick<Types.Store, DefinedFields["Store"]>;
-  export type CONNECTION_ROLE = Types.ConnectionRole;
   export type DateTime = Types.DateTime;
 
   export type QueryResolvers = Pick<
